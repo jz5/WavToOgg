@@ -23,13 +23,13 @@ File.WriteAllBytes("encoded.ogg", oggBytes);
     WaveFormat? waveFormat = null;
     byte[]? pcmBytes = null;
 
-    while (br.BaseStream.Position != br.BaseStream.Length)
+    while (reader.BaseStream.Position != reader.BaseStream.Length)
     {
         var chunkId = new string(reader.ReadChars(4));
         var size = reader.ReadInt32();
         if (chunkId == "RIFF")
         {
-            br.ReadChars(4); // "WAVE"
+            reader.ReadChars(4); // "WAVE"
         }
         else if (chunkId == "fmt ")
         {

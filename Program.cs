@@ -45,6 +45,9 @@ File.WriteAllBytes("encoded.ogg", oggBytes);
 
             if (waveFormat.FormatTag != 0x1) // 0x1: Linear PCM
                 throw new NotSupportedException();
+
+            if (size - 16 > 0)
+                reader.ReadBytes(size - 16);
         }
         else if (chunkId == "data")
         {

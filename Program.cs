@@ -1,21 +1,31 @@
 ﻿using OggVorbisEncoder;
-
 const int writeBufferSize = 512;
-var file = @"LinearPCM.wav";
-using var br = new BinaryReader(new FileStream(file, FileMode.Open));
-var (format, data) = ReadWaveFile(br);
-if (format == null || data == null)
-    return;
 
-var oggBytes = ConvertRawPcmFile(
-    format.SampleRate,
-    format.Channels,
-    data,
-    format.BitsPerSample == 16 ? PcmSample.SixteenBit : PcmSample.EightBit,
-    format.SampleRate,
-    format.Channels);
+// args[]: Linear PCM .wav file paths
+foreach (var arg in args)
+{
+    if (Path.GetExtension(arg).ToLowerInvariant() != ".wav") continue;
 
-File.WriteAllBytes("encoded.ogg", oggBytes);
+    // Input WAV
+    using var br = new BinaryReader(new FileStream(arg, FileMode.Open));
+    var (format, data) = ReadWaveFile(br);
+    if (format == null || data == null)
+        continue;
+
+    // Convert to Ogg
+    var oggBytes = ConvertRawPcmFile(
+        format.SampleRate,
+        format.Channels,
+        data,
+        format.BitsPerSample == 16 ? PcmSample.SixteenBit : PcmSample.EightBit,
+        format.SampleRate,
+        format.Channels);
+
+    // Output Ogg
+    var file = arg[..(arg.Length - 4)] + ".ogg";
+    Console.WriteLine(file);
+    File.WriteAllBytes(file, oggBytes);
+}
 
 
 (WaveFormat?, byte[]?) ReadWaveFile(BinaryReader reader)
